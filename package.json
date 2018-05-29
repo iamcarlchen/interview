@@ -1,0 +1,22 @@
+{
+  "name": "interview",
+  "version": "1.0.0",
+  "description": "it is a interview",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamcarlchen/interview.git"
+  },
+  "author": "CarlChen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iamcarlchen/interview/issues"
+  },
+  "homepage": "https://github.com/iamcarlchen/interview#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
