@@ -1,23 +1,25 @@
-let ERROR_INPUT_TYYPE = 1; //数据类型错误
-let ERROR_IP_PART_NOT_4 = 2; //IP段不是4个
-let ERROR_IP_NOT_LEGAL_STR = 3; //存在不合法字符
-let ERROR_IP_TOO_BIG = 4; //IP数值太大
-let ERROR_CONTINUE_DOT = 5; //连续两个点
-let ERROR_SPACE_NOT_RIGHT = 6; //空格位子不对
+let ERROR_INPUT_TYPE = 1;//数据类型错误
+let ERROR_ILLEGAL_CHAR = 2; //输入非法字符
+let ERROR_IP_TOO_BIG = 3; //IP段数字超出255
+let ERROR_DOT_AT_START = 4; //字符'.'在开头
+let ERROR_DOT_AT_END = 5; //字符'.'在结尾
+let ERROR_DOT_CONTINUE = 6; //字符'.'连续
+let ERROR_DOT_NUMBER = 7; //字符'.'数目不等于3
+let ERROR_SPACE_POSITION = 8;//空格处于数字之间
 
 function transfer(input){
 	if(typeof input != "string"){
 		return {
-			errorCode:ERROR_INPUT_TYYPE
+			errorCode:ERROR_INPUT_TYPE
 		};
 	}
-
 	let numArr = [];
 	let len = input.length;
 	let number = 0;
-	let pow = 2;
+	let power = 2;
+	let dotnum = 0;
 	for(let i = 0;i<len ;i++){
-		let char = input.charAt(i);
+		let char = input[i];
 		switch(char){
 			case "0":
 			case "1":
@@ -29,64 +31,69 @@ function transfer(input){
 			case "7":
 			case "8":
 			case "9":
-				if(pow<0){
-					return {
-						errorCode:ERROR_IP_TOO_BIG
-					}
+
+				number += parseInt(char)*Math.pow(10,power);
+				if(input[i+1] != '.' && input[i+1] != ' ' && i<len-1){
+					power--;
 				}
-				number += parseInt(char)*Math.pow(10,pow);
-				pow--;
-				//最后一位
-				if(i+1 == len){
-					if(pow >=0){
-						number = number/Math.pow(10,pow+1);
-					}
-					if(number>255){
-						return {
-							errorCode:ERROR_IP_TOO_BIG
-						}
-					}
+				if(i==len-1 && dotnum==3 ){
+					number = parseInt(number/Math.pow(10,power));
 					numArr.push(number);
+					number = 0;
+					power = 2;
 				}
 				break;
 			case ".":
-				if(pow == 2){
+				dotnum++;
+				if(i==0)
 					return {
-						errorCode:ERROR_CONTINUE_DOT
+						errorCode:ERROR_DOT_AT_START
 					}
-				}
-				if(pow >=0){
-					number = number/Math.pow(10,pow+1);
-				}
+				if(i==len-1)
+					return {
+						errorCode:ERROR_DOT_AT_END
+					}
+				if(dotnum>3)
+					return {
+						errorCode:ERROR_DOT_NUMBER
+					}
+				if((i<len && input[i+1]=='.'))
+					return{
+						errorCode:ERROR_DOT_CONTINUE
+					}
+				number = parseInt(number/Math.pow(10,power));
 				if(number>255){
 					return {
 						errorCode:ERROR_IP_TOO_BIG
 					}
 				}
-				
 				numArr.push(number);
 				number = 0;
-				pow = 2;
+				power = 2;
 				break;
 			case " ":
-				if(pow >-1 && pow < 2){
+				if((i-1>0 && (input.charAt(i-1)!= '.' && input.charAt(i-1)!=' ')) 
+					&& (i+1<=len && (input.charAt(i+1)!= '.' && input.charAt(i+1)!=' ')))
+
 					return {
-						errorCode:ERROR_SPACE_NOT_RIGHT
+						errorCode:ERROR_SPACE_POSITION
 					}
+
+				if(power >=0 && dotnum==3){
+					if(number){
+						number = parseInt(number/Math.pow(10,power));
+						numArr.push(number);
+						number = 0;
+						power = 2;
+					}
+					break;
 				}
 				break;
 			default:
 				return {
-					errorCode:ERROR_IP_NOT_LEGAL_STR
+					errorCode:ERROR_ILLEGAL_CHAR
 				}
 		}
-	}
-
-	// console.log(numArr);
-	if(numArr.length != 4){
-		return {
-			errorCode:ERROR_IP_PART_NOT_4
-		};
 	}
 
 	let temp2 = [];
@@ -101,5 +108,4 @@ function transfer(input){
 	});
 	return result;
 }
-
-module.exports = transfer;
+ module.exports = transfer;
