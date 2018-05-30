@@ -1,7 +1,7 @@
 # interview
 
 # Usage
-npm install 
+npm install <br/>
 npm test
 
 # Test Result
